@@ -1,0 +1,348 @@
+# XCODEGEN VERSION
+1.11.2
+
+# SPEC
+aggregateTargets:
+  SuperTarget:
+    attributes:
+      CUSTOM: value
+    buildScripts:
+    - name: MyScript
+      script: echo "do the thing"
+    settings:
+      MY_SETTING: hello
+    targets:
+    - App_iOS
+    - Framework_iOS
+configFiles:
+  Test Debug: Configs/config.xcconfig
+configs:
+  Production Debug: debug
+  Production Release: release
+  Staging Debug: debug
+  Staging Release: release
+  Test Debug: debug
+  Test Release: release
+fileGroups:
+- Configs
+- FileGroup
+- SomeFile
+include:
+- environments.yml
+name: Project
+options:
+  bundleIdPrefix: com.project
+  deploymentTarget:
+    watchOS: 4e+0
+  groupSortPosition: top
+  indentWidth: 2
+  tabWidth: 2
+  transitivelyLinkDependencies: true
+  usesTabs: false
+schemes:
+  Framework:
+    build:
+      buildImplicitDependencies: false
+      parallelizeBuild: false
+      preActions:
+      - script: echo Starting Framework Build
+        settingsTarget: Framework_iOS
+      targets:
+        Framework_iOS: all
+    run:
+      commandLineArguments:
+        argument: true
+        argument.with.dot: true
+settings:
+  configs:
+    Staging:
+      BUNDLE_ID_SUFFIX: .staging
+    Test:
+      BUNDLE_ID_SUFFIX: .test
+targetTemplates:
+  MyTemplate:
+    scheme: {}
+targets:
+  App_iOS:
+    attributes:
+      ProvisioningStyle: Automatic
+    dependencies:
+    - target: Framework_iOS
+    - target: StaticLibrary_ObjC
+    - carthage: Alamofire
+    - target: App_watchOS
+    - target: iMessageApp
+    - framework: Vendor/SomeFramework.framework
+    platform: iOS
+    postbuildScripts:
+    - name: Strip Unused Architectures from Frameworks
+      path: scripts/strip-frameworks.sh
+      runOnlyWhenInstalling: true
+    - name: MyScript
+      script: 'echo "You ran a script!"
+
+'
+    scheme:
+      commandLineArguments:
+        MyDisabledArgument: false
+        MyEnabledArgument: true
+      gatherCoverageData: true
+      testTargets:
+      - App_iOS_Tests
+      - App_iOS_UITests
+    settings:
+      INFOPLIST_FILE: App_iOS/Info.plist
+      PRODUCT_BUNDLE_IDENTIFIER: com.project.app
+    sources:
+    - StandaloneFiles/StandaloneAssets.xcassets
+    - compilerFlags:
+      - -Werror
+      excludes:
+      - '**/excluded-file'
+      - excluded-file
+      name: App
+      path: App_iOS
+    - path: StandaloneFiles/Standalone.swift
+    - FileGroup/UnderFileGroup
+    - Resources/MyBundle.bundle
+    - path: Resources/ResourceFolder
+      type: folder
+    - buildPhase: none
+      path: Folder
+      type: folder
+    - buildPhase: none
+      path: Mintfile
+      type: file
+    - buildPhase:
+        copyFiles:
+          destination: productsDirectory
+          subpath: include/$(PRODUCT_NAME)
+      path: CopyFiles
+    type: application
+  App_iOS_Tests:
+    dependencies:
+    - target: App_iOS
+    platform: iOS
+    sources: App_iOS_Tests
+    type: bundle.unit-test
+  App_iOS_UITests:
+    dependencies:
+    - target: App_iOS
+    platform: iOS
+    sources: App_iOS_UITests
+    type: bundle.ui-testing
+  App_macOS:
+    attributes:
+      ProvisioningStyle: Automatic
+    dependencies:
+    - target: Framework_macOS
+    - target: XPC Service
+    platform: macOS
+    sources:
+    - path: StandaloneFiles/Standalone.swift
+    - path: Vendor/SomeXPCService.xpc
+    type: application
+  App_watchOS:
+    dependencies:
+    - target: App_watchOS Extension
+    deploymentTarget: 3e+0
+    platform: watchOS
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.project.app.watch
+    sources: App_watchOS
+    templates:
+    - MyTemplate
+    type: application.watchapp2
+  App_watchOS Extension:
+    dependencies:
+    - carthage: Alamofire
+    platform: watchOS
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.project.app.watch.extension
+    sources: App_watchOS Extension
+    type: watchkit2-extension
+  Framework:
+    dependencies:
+    - carthage: Alamofire
+    - target: StaticLibrary_ObjC
+    platform:
+    - iOS
+    - tvOS
+    - watchOS
+    - macOS
+    postbuildScripts:
+    - name: MyScript
+      path: scripts/script.sh
+    sources:
+    - excludes:
+      - '*.xcodeproj'
+      path: Framework
+    - buildPhase: headers
+      headerVisibility: public
+      path: Headers
+      type: folder
+    type: framework
+  Legacy:
+    legacy:
+      passSettings: true
+      toolPath: /usr/bin/true
+    platform: iOS
+    type: 
+  StaticLibrary_ObjC:
+    platform: iOS
+    sources: StaticLibrary_ObjC
+    type: library.static
+  StaticLibrary_Swift:
+    platform: iOS
+    sources: StaticLibrary_Swift
+    type: library.static
+  XPC Service:
+    platform: macOS
+    sources:
+    - path: XPC Service
+    type: xpc-service
+  iMessageApp:
+    dependencies:
+    - target: iMessageExtension
+    platform: iOS
+    scheme: {}
+    sources: iMessage
+    type: application.messages
+  iMessageExtension:
+    platform: iOS
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.project.iMessageApp.extension
+    sources: iMessage MessagesExtension
+    type: app-extension.messages
+
+
+# FILES
+App_iOS
+App_iOS_Tests
+App_iOS_Tests/Info.plist
+App_iOS_Tests/TestProjectTests.swift
+App_iOS_UITests
+App_iOS_UITests/Info.plist
+App_iOS_UITests/TestProjectUITests.swift
+App_iOS/.DS_Store
+App_iOS/AppDelegate.swift
+App_iOS/Assets.xcassets
+App_iOS/Assets.xcassets/AppIcon.appiconset
+App_iOS/Assets.xcassets/AppIcon.appiconset/Contents.json
+App_iOS/Base.lproj
+App_iOS/Base.lproj/.DS_Store
+App_iOS/Base.lproj/excluded-file
+App_iOS/Base.lproj/LaunchScreen.storyboard
+App_iOS/Base.lproj/Localizable.strings
+App_iOS/Base.lproj/Localizable.stringsdict
+App_iOS/Base.lproj/LocalizedStoryboard.storyboard
+App_iOS/Base.lproj/Main.storyboard
+App_iOS/en.lproj
+App_iOS/en.lproj/Localizable.strings
+App_iOS/en.lproj/Localizable.stringsdict
+App_iOS/en.lproj/LocalizedStoryboard.strings
+App_iOS/excluded-file
+App_iOS/Info.plist
+App_iOS/Model.xcdatamodeld
+App_iOS/Model.xcdatamodeld/.xccurrentversion
+App_iOS/Model.xcdatamodeld/Model 2.xcdatamodel
+App_iOS/Model.xcdatamodeld/Model 2.xcdatamodel/contents
+App_iOS/Model.xcdatamodeld/Model 3.xcdatamodel
+App_iOS/Model.xcdatamodeld/Model 3.xcdatamodel/contents
+App_iOS/Model.xcdatamodeld/Model.xcdatamodel
+App_iOS/Model.xcdatamodeld/Model.xcdatamodel/contents
+App_iOS/module.modulemap
+App_iOS/ViewController.swift
+App_watchOS
+App_watchOS Extension
+App_watchOS Extension/Assets.xcassets
+App_watchOS Extension/Assets.xcassets/Complication.complicationset
+App_watchOS Extension/Assets.xcassets/Complication.complicationset/Circular.imageset
+App_watchOS Extension/Assets.xcassets/Complication.complicationset/Circular.imageset/Contents.json
+App_watchOS Extension/Assets.xcassets/Complication.complicationset/Contents.json
+App_watchOS Extension/Assets.xcassets/Complication.complicationset/Extra Large.imageset
+App_watchOS Extension/Assets.xcassets/Complication.complicationset/Extra Large.imageset/Contents.json
+App_watchOS Extension/Assets.xcassets/Complication.complicationset/Modular.imageset
+App_watchOS Extension/Assets.xcassets/Complication.complicationset/Modular.imageset/Contents.json
+App_watchOS Extension/Assets.xcassets/Complication.complicationset/Utilitarian.imageset
+App_watchOS Extension/Assets.xcassets/Complication.complicationset/Utilitarian.imageset/Contents.json
+App_watchOS Extension/ExtensionDelegate.swift
+App_watchOS Extension/Info.plist
+App_watchOS Extension/InterfaceController.swift
+App_watchOS Extension/NotificationController.swift
+App_watchOS Extension/PushNotificationPayload.apns
+App_watchOS/Assets.xcassets
+App_watchOS/Assets.xcassets/AppIcon.appiconset
+App_watchOS/Assets.xcassets/AppIcon.appiconset/Contents.json
+App_watchOS/Base.lproj
+App_watchOS/Base.lproj/Interface.storyboard
+App_watchOS/Info.plist
+Configs
+Configs/base.xcconfig
+Configs/config.xcconfig
+Configs/config.xcconfig
+CopyFiles
+CopyFiles/Empty.h
+FileGroup
+FileGroup/UnderFileGroup
+FileGroup/UnderFileGroup/MoreUnder.swift
+Folder
+Folder/Folder1
+Folder/Folder1/file.file
+Folder/Folder2
+Folder/Folder2/file.file
+Framework
+Framework/FrameworkFile.swift
+Framework/Info.plist
+Framework/MyFramework.h
+Framework/Project.xcodeproj
+Framework/Project.xcodeproj/project.pbxproj
+Headers
+Headers/Folder1
+Headers/Folder1/Header2.h
+Headers/Header1.h
+iMessage
+iMessage MessagesExtension
+iMessage MessagesExtension/Assets.xcassets
+iMessage MessagesExtension/Assets.xcassets/Contents.json
+iMessage MessagesExtension/Assets.xcassets/iMessage App Icon.stickersiconset
+iMessage MessagesExtension/Assets.xcassets/iMessage App Icon.stickersiconset/Contents.json
+iMessage MessagesExtension/Base.lproj
+iMessage MessagesExtension/Base.lproj/MainInterface.storyboard
+iMessage MessagesExtension/Info.plist
+iMessage MessagesExtension/MessagesViewController.swift
+iMessage/Assets.xcassets
+iMessage/Assets.xcassets/AppIcon.appiconset
+iMessage/Assets.xcassets/AppIcon.appiconset/Contents.json
+iMessage/Assets.xcassets/Contents.json
+iMessage/Info.plist
+Mintfile
+Resources/MyBundle.bundle
+Resources/MyBundle.bundle/file.text
+Resources/ResourceFolder
+Resources/ResourceFolder/a.jpg
+Resources/ResourceFolder/j.jpg
+SomeFile
+StandaloneFiles/Standalone.swift
+StandaloneFiles/StandaloneAssets.xcassets
+StandaloneFiles/StandaloneAssets.xcassets/Contents.json
+StaticLibrary_ObjC
+StaticLibrary_ObjC/Module
+StaticLibrary_ObjC/Module/module.modulemap
+StaticLibrary_ObjC/StaticLibrary_ObjC.h
+StaticLibrary_ObjC/StaticLibrary_ObjC.m
+StaticLibrary_Swift
+StaticLibrary_Swift/StaticLibrary.swift
+Vendor/SomeXPCService.xpc
+Vendor/SomeXPCService.xpc/Contents
+Vendor/SomeXPCService.xpc/Contents/_CodeSignature
+Vendor/SomeXPCService.xpc/Contents/_CodeSignature/CodeResources
+Vendor/SomeXPCService.xpc/Contents/Info.plist
+Vendor/SomeXPCService.xpc/Contents/MacOS
+Vendor/SomeXPCService.xpc/Contents/MacOS/XPC Service
+XPC Service
+XPC Service/Info.plist
+XPC Service/main.m
+XPC Service/XPC_Service.h
+XPC Service/XPC_Service.m
+XPC Service/XPC_ServiceProtocol.h"
