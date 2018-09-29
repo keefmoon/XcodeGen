@@ -23,6 +23,7 @@ let package = Package(
           "XcodeGenKit",
           "Commander",
           "Rainbow",
+          "Yams",
         ]),
         .target(name: "XcodeGenKit", dependencies: [
           "ProjectSpec",
