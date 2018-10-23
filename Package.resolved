@@ -66,11 +66,11 @@
       },
       {
         "package": "xcodeproj",
-        "repositoryURL": "https://github.com/tuist/xcodeproj.git",
+        "repositoryURL": "https://github.com/keefmoon/xcodeproj.git",
         "state": {
-          "branch": null,
-          "revision": "23da51abd3de3bedaad59a0afbb150b48504b5b0",
-          "version": "6.3.0"
+          "branch": "kdm/sort-compatible-references",
+          "revision": "57d986251f941b8159f06b76c06c69d5d8c2dd80",
+          "version": null
         }
       },
       {
